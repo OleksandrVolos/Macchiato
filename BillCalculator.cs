@@ -8,7 +8,7 @@ namespace WpfApp1
     {
         private const decimal GstRate = 0.05m;
 
-        public static decimal CalculateNetTotal(List<MenuItem> items)
+        public static decimal CalculateNetTotal(IEnumerable<MenuItem> items)
         {
             return items.Sum(item => item.Price);
         }

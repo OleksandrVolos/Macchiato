@@ -5,8 +5,111 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="Macchiato Cafe" Height="600" Width="1000"
+        Closing="Window_Closing"
+        Background="#FFFAFAFA" WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <Style x:Key="AnimatedButtonStyle" TargetType="Button">
+            <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <EventTrigger RoutedEvent="Button.PreviewMouseLeftButtonDown">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)"
+                                         To="0.93" Duration="0:0:0.05" AutoReverse="True"/>
+                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)"
+                                         To="0.93" Duration="0:0:0.05" AutoReverse="True"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="3*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Левая панель (в Border) -->
+        <Border Grid.Column="0" Margin="10" Background="#FFF8F8F8" Padding="15" BorderBrush="#DDD" BorderThickness="1">
+            <StackPanel>
+                <TextBlock Text="Добавить позицию" FontSize="20" FontWeight="Bold" Margin="0 0 0 15" />
+
+                <TextBlock Text="Описание:" FontWeight="SemiBold"/>
+                <TextBox x:Name="descriptionTextBox" Margin="0 5 0 10" Height="30"/>
+
+                <TextBlock Text="Цена:" FontWeight="SemiBold"/>
+                <TextBox x:Name="priceTextBox" Margin="0 5 0 20" Height="30"/>
+
+                <Button Content="➕ Добавить"
+        Height="35"
+        Background="#4CAF50"
+        Foreground="White"
+        Click="AddItem_Click"
+        Style="{StaticResource AnimatedButtonStyle}" />
+
+                <Separator Margin="10"/>
+
+                <Button Style="{StaticResource AnimatedButtonStyle}" Content="🗑 Удалить выбранное" Height="35" Margin="0 5" Background="#F44336" Foreground="White" Click="RemoveItem_Click" />
+                <Button Style="{StaticResource AnimatedButtonStyle}" Content="💰 Добавить чаевые" Height="35" Margin="0 5" Click="AddTip_Click" />
+                <Button Style="{StaticResource AnimatedButtonStyle}" Content="🧹 Очистить всё" Height="35" Margin="0 5" Click="ClearAll_Click" />
+                <Button Style="{StaticResource AnimatedButtonStyle}" Content="💾 Сохранить" Height="35" Margin="0 5" Click="SaveToFile_Click" />
+                <Button Style="{StaticResource AnimatedButtonStyle}" Content="📂 Загрузить" Height="35" Margin="0 5" Click="LoadFromFile_Click" />
+                <Button Style="{StaticResource AnimatedButtonStyle}" Content="🚪 Выход" Height="35" Margin="0 10 0 0" Background="#9E9E9E" Foreground="White" Click="ExitApp_Click" />
+
+            </StackPanel>
+        </Border>
+
+        <!-- Правая панель -->
+        <Border Grid.Column="1" Margin="10" BorderBrush="#DDD" BorderThickness="1" Background="White">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <DataGrid x:Name="itemsDataGrid"
+                          AutoGenerateColumns="False"
+                          CanUserAddRows="False"
+                          HeadersVisibility="Column"
+                          Margin="10"
+                          FontSize="14"
+                          SelectionMode="Single">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Описание" Binding="{Binding Description}" Width="*" />
+                        <DataGridTextColumn Header="Цена" Binding="{Binding Price, StringFormat={}{0:C}}" Width="100" />
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <!-- Итого -->
+                <Border Grid.Row="1" Margin="10" Background="#FAFAFA" Padding="10">
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock x:Name="netTotalText" Text="Net Total: $0.00" FontSize="16" />
+                        <TextBlock x:Name="tipAmountText" Text="Tip: $0.00" FontSize="16" />
+                        <TextBlock x:Name="gstAmountText" Text="GST: $0.00" FontSize="16" />
+                        <TextBlock x:Name="totalAmountText" Text="Total: $0.00" FontSize="18" FontWeight="Bold" />
+                    </StackPanel>
+                </Border>
+
+            </Grid>
+        </Border>
+        <TextBlock x:Name="notificationText"
+           Text=""
+           Foreground="Green"
+           FontSize="16"
+           FontWeight="Bold"
+           Margin="0 10"
+           HorizontalAlignment="Center"
+           VerticalAlignment="Bottom"
+           Visibility="Collapsed"
+           Opacity="0"/>
 
     </Grid>
+
 </Window>
