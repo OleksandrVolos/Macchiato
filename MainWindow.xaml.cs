@@ -12,14 +12,12 @@ namespace WpfApp1
     {
         private ObservableCollection<MenuItem> items = new();
         private decimal tipAmount = 0;
-
         public MainWindow()
         {
             InitializeComponent();
             itemsDataGrid.ItemsSource = items;
             UpdateTotals();
         }
-
         private void AddItem_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -84,7 +82,6 @@ namespace WpfApp1
 
  
         }
-
         private void RemoveItem_Click(object sender, RoutedEventArgs e)
         {
             if (itemsDataGrid.SelectedItem is MenuItem selectedItem)
@@ -98,6 +95,8 @@ namespace WpfApp1
                 MessageBox.Show("Оберіть позицію для видалення");
             }
         }
+
+
         private void Window_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
         {
             MessageBox.Show("Дякую, що користувалися додатком 🍰\nГарного дня!", "Допобачення",
@@ -114,165 +113,6 @@ namespace WpfApp1
                 MessageBox.Show($"Помилка при закритті: {ex.Message}");
             }
         }
-
-
-        private void AddTip_Click(object sender, RoutedEventArgs e)
-        {
-            decimal netTotal = BillCalculator.CalculateNetTotal(items);
-
-            if (netTotal == 0)
-            {
-                MessageBox.Show("Додайте хочаб одну позицію");
-                return;
-            }
-
-            var result = MessageBox.Show("Додати чаєві як відсоток?", "Чаєві", MessageBoxButton.YesNoCancel);
-
-            if (result == MessageBoxResult.Yes)
-            {
-                string percentInput = Microsoft.VisualBasic.Interaction.InputBox("Введіть відсоток чаєвих:", "Чаєві", "10")
-                    .Replace(',', '.');
-
-                if (string.IsNullOrWhiteSpace(percentInput))
-                {
-                    MessageBox.Show("Ви не ввели значення");
-                    return;
-                }
-
-                if (!int.TryParse(percentInput, out int percent) || percent <= 0)
-                {
-                    MessageBox.Show("Процент має бути додатнім, цілим числом");
-                    return;
-                }
-
-                tipAmount = BillCalculator.CalculateTip(netTotal, percent, true);
-            }
-            else if (result == MessageBoxResult.No)
-            {
-                string amountInput = Microsoft.VisualBasic.Interaction.InputBox("Введіть суму чаєвих:", "Чаєві", "0")
-                    .Replace(',', '.');
-
-                if (string.IsNullOrWhiteSpace(amountInput))
-                {
-                    MessageBox.Show("Ви не ввели значення");
-                    return;
-                }
-
-                if (amountInput.Length > 30)
-                {
-                    MessageBox.Show("Занадто велике значення. Обмеження — 30 символів.");
-                    return;
-                }
-
-                if (!decimal.TryParse(amountInput, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out decimal amount))
-                {
-                    MessageBox.Show("Невірний формат або надто велике число.");
-                    return;
-                }
-
-                if (amount <= 0)
-                {
-                    MessageBox.Show("Сума чаєвих має бути більше нуля");
-                    return;
-                }
-
-
-                tipAmount = BillCalculator.CalculateTip(netTotal, amount, false);
-            }
-
-            UpdateTotals();
-        }
-
-
-        private void ClearAll_Click(object sender, RoutedEventArgs e)
-        {
-            items.Clear();
-            tipAmount = 0;
-            UpdateTotals();
-        }
-
-        private void SaveToFile_Click(object sender, RoutedEventArgs e)
-        {
-            SaveFileDialog saveDialog = new SaveFileDialog
-            {
-                Filter = "CSV Files (*.csv)|*.csv"
-            };
-
-            if (saveDialog.ShowDialog() == true)
-            {
-                string fileName = Path.GetFileNameWithoutExtension(saveDialog.FileName);
-                if (fileName.Length < 1 || fileName.Length > 10)
-                {
-                    MessageBox.Show("Імя файлу має бути від 1 до 10 символів");
-                    return;
-                }
-
-                try
-                {
-                    using var writer = new StreamWriter(saveDialog.FileName);
-                    foreach (var item in items)
-                    {
-                        writer.WriteLine($"{item.Description};{item.Price}");
-                    }
-
-                    ShowNotification("✅ Успішно збережено!");
-
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Помилка при збереженні: {ex.Message}", "Файл не вдалося записати");
-                }
-
-            }
-
-        }
-
-        private void LoadFromFile_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog openDialog = new OpenFileDialog
-            {
-                Filter = "CSV файлы (*.csv)|*.csv",
-                DefaultExt = "csv",
-                Title = "Відкрити чек"
-            };
-
-
-            if (openDialog.ShowDialog() == true)
-            {
-                try
-                {
-                    items.Clear();
-                    foreach (var line in File.ReadAllLines(openDialog.FileName))
-                    {
-                        var parts = line.Split(';');
-                        if (parts.Length == 2 &&
-                            decimal.TryParse(parts[1], System.Globalization.NumberStyles.Any,
-                                System.Globalization.CultureInfo.InvariantCulture, out decimal price))
-                        {
-                            items.Add(new MenuItem { Description = parts[0], Price = price });
-                        }
-                        else
-                        {
-                            MessageBox.Show($"Невірний рядок: {line}", "Помилка формату");
-                        }
-                    }
-
-                    tipAmount = 0;
-                    UpdateTotals();
-                    ShowNotification("📂 Дані завантажено!");
-
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Помилка при завантаженні: {ex.Message}", "Файл не вдалося прочитати");
-                }
-
-            }
-            else
-            {
-                MessageBox.Show("Ви не обрали файл!");
-            }
-            }
         private void ShowNotification(string message)
         {
             notificationText.Text = message;
@@ -289,7 +129,6 @@ namespace WpfApp1
 
             notificationText.BeginAnimation(OpacityProperty, fadeOut);
         }
-
         private void UpdateTotals()
         {
             decimal net = 0;
@@ -343,13 +182,11 @@ namespace WpfApp1
                 row.Background = originalBrush;
             }
         }
-
         private void MarkTextBoxInvalid(System.Windows.Controls.TextBox box)
         {
             box.BorderBrush = System.Windows.Media.Brushes.Red;
             box.BorderThickness = new Thickness(2);
         }
-
         private void ResetTextBoxStyle(System.Windows.Controls.TextBox box)
         {
             box.ClearValue(System.Windows.Controls.Border.BorderBrushProperty);
