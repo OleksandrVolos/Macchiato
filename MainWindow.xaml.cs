@@ -28,7 +28,6 @@ namespace WpfApp1
                 string description = descriptionTextBox.Text.Trim();
                 string priceText = priceTextBox.Text.Trim().Replace(',', '.');
 
-                // Валидации
                 if (description.Length < 3 || description.Length > 20)
                 {
                     MarkTextBoxInvalid(descriptionTextBox);
@@ -227,7 +226,7 @@ namespace WpfApp1
             notificationText.Opacity = 1;
 
             var fadeOut = new System.Windows.Media.Animation.DoubleAnimation(1, 0, TimeSpan.FromSeconds(2));
-            fadeOut.BeginTime = TimeSpan.FromSeconds(1); // Подожди 1 секунду перед затуханием
+            fadeOut.BeginTime = TimeSpan.FromSeconds(1); 
 
             fadeOut.Completed += (s, e) =>
             {
@@ -284,7 +283,7 @@ namespace WpfApp1
                 var originalBrush = row.Background;
                 row.Background = System.Windows.Media.Brushes.LightGreen;
 
-                await Task.Delay(400); // Подсветка на 400 мс
+                await Task.Delay(400); 
 
                 row.Background = originalBrush;
             }
