@@ -95,6 +95,72 @@ namespace WpfApp1
                 MessageBox.Show("Оберіть позицію для видалення");
             }
         }
+        private void AddTip_Click(object sender, RoutedEventArgs e)
+        {
+            decimal netTotal = BillCalculator.CalculateNetTotal(items);
+
+            if (netTotal == 0)
+            {
+                MessageBox.Show("Додайте хочаб одну позицію");
+                return;
+            }
+
+            var result = MessageBox.Show("Додати чаєві як відсоток?", "Чаєві", MessageBoxButton.YesNoCancel);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                string percentInput = Microsoft.VisualBasic.Interaction.InputBox("Введіть відсоток чаєвих:", "Чаєві", "10")
+                    .Replace(',', '.');
+
+                if (string.IsNullOrWhiteSpace(percentInput))
+                {
+                    MessageBox.Show("Ви не ввели значення");
+                    return;
+                }
+
+                if (!int.TryParse(percentInput, out int percent) || percent <= 0)
+                {
+                    MessageBox.Show("Процент має бути додатнім, цілим числом");
+                    return;
+                }
+
+                tipAmount = BillCalculator.CalculateTip(netTotal, percent, true);
+            }
+            else if (result == MessageBoxResult.No)
+            {
+                string amountInput = Microsoft.VisualBasic.Interaction.InputBox("Введіть суму чаєвих:", "Чаєві", "0")
+                    .Replace(',', '.');
+
+                if (string.IsNullOrWhiteSpace(amountInput))
+                {
+                    MessageBox.Show("Ви не ввели значення");
+                    return;
+                }
+
+                if (amountInput.Length > 30)
+                {
+                    MessageBox.Show("Занадто велике значення. Обмеження — 30 символів.");
+                    return;
+                }
+
+                if (!decimal.TryParse(amountInput, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out decimal amount))
+                {
+                    MessageBox.Show("Невірний формат або надто велике число.");
+                    return;
+                }
+
+                if (amount <= 0)
+                {
+                    MessageBox.Show("Сума чаєвих має бути більше нуля");
+                    return;
+                }
+
+
+                tipAmount = BillCalculator.CalculateTip(netTotal, amount, false);
+            }
+
+            UpdateTotals();
+        }
 
 
         private void Window_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
