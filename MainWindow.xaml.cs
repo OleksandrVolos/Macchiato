@@ -161,6 +161,12 @@ namespace WpfApp1
 
             UpdateTotals();
         }
+        private void ClearAll_Click(object sender, RoutedEventArgs e)
+        {
+            items.Clear();
+            tipAmount = 0;
+            UpdateTotals();
+        }
 
 
         private void Window_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
