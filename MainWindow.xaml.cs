@@ -167,6 +167,41 @@ namespace WpfApp1
             tipAmount = 0;
             UpdateTotals();
         }
+        private void SaveToFile_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveDialog = new SaveFileDialog
+            {
+                Filter = "CSV Files (*.csv)|*.csv"
+            };
+
+            if (saveDialog.ShowDialog() == true)
+            {
+                string fileName = Path.GetFileNameWithoutExtension(saveDialog.FileName);
+                if (fileName.Length < 1 || fileName.Length > 10)
+                {
+                    MessageBox.Show("Імя файлу має бути від 1 до 10 символів");
+                    return;
+                }
+
+                try
+                {
+                    using var writer = new StreamWriter(saveDialog.FileName);
+                    foreach (var item in items)
+                    {
+                        writer.WriteLine($"{item.Description};{item.Price}");
+                    }
+
+                    ShowNotification("✅ Успішно збережено!");
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Помилка при збереженні: {ex.Message}", "Файл не вдалося записати");
+                }
+
+            }
+
+        }
 
 
         private void Window_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
